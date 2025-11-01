@@ -5,14 +5,14 @@ export class Result<T>
 {
     private value: T | null
     private error: Error | null
-    private responseCode: number | null
+    private statusCode: number | null
     private message: string | null
 
-    private constructor ( value: T | null, error: Error | null, errorCode: number | null, message: string | null )
+    private constructor ( value: T | null, error: Error | null, statusCode: number | null, message: string | null )
     {
         this.value = value
         this.error = error
-        this.responseCode = errorCode
+        this.statusCode = statusCode
         this.message = message
     }
 
@@ -38,7 +38,7 @@ export class Result<T>
 
     get StatusCode (): number | null
     {
-        return this.responseCode
+        return this.statusCode
     }
 
     get Message (): string

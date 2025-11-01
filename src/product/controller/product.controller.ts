@@ -1,9 +1,11 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, Inject, ValidationPipe, Query } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
-import { CreateProductDto } from '../dto/create-product.dto';
+import { ApiTags, ApiParam } from '@nestjs/swagger';
+import { CreateProductDto } from '../dto/validators/create-product.dto';
+import { GetProductByIdDto } from '../dto/validators/get-productById.dto';
 import { ApiBearerAuth } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../../auth/guard/guard.service';
 import { UseGuards } from '@nestjs/common';
+import { GetProductByIdService } from '../services/get-productById';
 
 @ApiTags('Products')
 @ApiBearerAuth('JWT-auth')
@@ -12,10 +14,13 @@ export class ProductController {
 
     constructor() {}
 
-    @UseGuards(JwtAuthGuard)
+    // @UseGuards(JwtAuthGuard)
     @Get('/:id')
-    async findProductById(@Param('id') id: string) {
-        return `This action returns a product with id: ${id}`;
+    @ApiParam({ name: 'id', required: true, description: 'Product id', type: String })
+    async findProductById(@Param(new ValidationPipe({ transform: true })) params: GetProductByIdDto) {
+        const service = new GetProductByIdService();
+        const result = await service.execute(params);
+        return result.Value;
     }
 
     @Post()
