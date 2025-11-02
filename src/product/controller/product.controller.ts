@@ -5,21 +5,31 @@ import { GetProductByIdDto } from '../dto/validators/get-productById.dto';
 import { ApiBearerAuth } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../../auth/guard/guard.service';
 import { UseGuards } from '@nestjs/common';
+import { DataSource } from 'typeorm';
 import { GetProductByIdService } from '../services/get-productById';
+import { ProductRepository } from '../repository/postgres/product.repository';
 
 @ApiTags('Products')
 @ApiBearerAuth('JWT-auth')
 @Controller('products')
 export class ProductController {
+    private readonly productRepository: ProductRepository;
 
-    constructor() {}
+    constructor(@Inject(DataSource) private readonly dataSource: DataSource) {
+        this.productRepository = new ProductRepository(this.dataSource)
+    }
 
     // @UseGuards(JwtAuthGuard)
     @Get('/:id')
     @ApiParam({ name: 'id', required: true, description: 'Product id', type: String })
     async findProductById(@Param(new ValidationPipe({ transform: true })) params: GetProductByIdDto) {
-        const service = new GetProductByIdService();
+        const service = new GetProductByIdService(this.productRepository);
         const result = await service.execute(params);
+
+        if (!result.isSuccess()) {
+            return { error: result.Error.message, statusCode: result.StatusCode, message: result.Message };
+        }
+
         return result.Value;
     }
 

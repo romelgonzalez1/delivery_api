@@ -7,7 +7,7 @@ export class JwtService {
 
     generateToken(payload: any): string {
         return jwt.sign(payload, this.jwtSecret, {
-            expiresIn: process.env.JWT_EXPIRATION,
+            expiresIn: process.env.JWT_EXPIRES_IN,
         });
     }
 

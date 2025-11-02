@@ -1,0 +1,17 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "node-terminal",
+      "name": "Debug NestJS App",
+      "request": "launch",
+      "command": "npm run start:dev",
+      "autoAttachChildProcesses": true,
+      "serverReadyAction": {
+        "pattern": "Nest application successfully started",
+        "uriFormat": "%s",
+        "action": "attach"
+      }
+    }
+  ]
+}
