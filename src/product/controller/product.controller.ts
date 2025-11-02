@@ -7,6 +7,7 @@ import { JwtAuthGuard } from '../../auth/guard/guard.service';
 import { UseGuards } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 import { GetProductByIdService } from '../services/get-productById';
+import { CreateProductService } from '../services/create-product';
 import { ProductRepository } from '../repository/postgres/product.repository';
 
 @ApiTags('Products')
@@ -35,6 +36,13 @@ export class ProductController {
 
     @Post()
     async createProduct(@Body() createProductDto: CreateProductDto) {
-        return 'This action adds a new product';
+        const service = new CreateProductService(this.productRepository);
+        const result = await service.execute(createProductDto);
+
+        if (!result.isSuccess()) {
+            return { error: result.Error.message, statusCode: result.StatusCode, message: result.Message };
+        }
+        
+        return result.Value;
     }
 }

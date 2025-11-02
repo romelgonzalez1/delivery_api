@@ -29,11 +29,24 @@ export class ProductRepository extends Repository<ProductORM> implements IProduc
 
             const getProduct = await this.productMapper.fromPersistenceToDomain(product);
             return Result.success(getProduct, 200);
+
         } catch (error) {
             console.log(error.message);
             return Result.fail(error, 500, error?.message ?? 'Internal error');
         }
 
     }
-        
+
+    async createProduct(product: Product): Promise<Result<Product>> {
+        try {
+            const productORM = await this.productMapper.fromDomainToPersistence(product);
+            const createdProduct = await this.save(productORM);
+            const createdProductDomain = await this.productMapper.fromPersistenceToDomain(createdProduct);
+            return Result.success(createdProductDomain, 201);
+        } catch (error) {
+            console.log(error.message);
+            return Result.fail(error, 500, error?.message ?? 'Internal error');
+        }
+
+    }
 }
