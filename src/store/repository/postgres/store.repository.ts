@@ -65,16 +65,32 @@ export class StoreRepository extends Repository<StoreORM> implements IStoreRepos
         }
     }
 
-    async createStore(store: Store): Promise<Result<Store>> {
+    async saveStore(store: Store): Promise<Result<Store>> {
         try {
             const storeORM = await this.storeMapper.fromDomainToPersistence(store);
             const createdStore = await this.save(storeORM);
             const createdStoreDomain = await this.storeMapper.fromPersistenceToDomain(createdStore);
-            return Result.success(createdStoreDomain, 201);
+            return Result.success<Store>(createdStoreDomain, 201);
         } catch (error) {
             console.log(error.message);
-            return Result.fail(error, 500, error?.message ?? 'Internal error');
+            return Result.fail<Store>(error, 500, error?.message ?? 'Internal error');
         }
 
+    }
+
+    async deleteStore(store: Store): Promise<Result<Store>> {
+        try {
+
+            const deleteResult = await this.delete({ id: store.Id });
+
+            if (!deleteResult || !deleteResult.affected || deleteResult.affected === 0) {
+                return Result.fail<Store>(new Error('Store not found'), 404, 'Store not found');
+            }
+
+            return Result.success<Store>(store, 200);
+        } catch (error) {
+            console.log(error.message);
+            return Result.fail<Store>(error, 500, error?.message ?? 'Internal error');
+        }
     }
 }

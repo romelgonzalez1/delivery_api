@@ -1,7 +1,6 @@
-import { IsString, MinLength } from 'class-validator';
+import { IsString, IsUUID, MinLength } from 'class-validator';
 
 export class GetProductByIdDto {
-    @IsString()
-    @MinLength(2)
+    @IsUUID()
     id: string;
 }

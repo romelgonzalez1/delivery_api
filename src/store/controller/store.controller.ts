@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Inject, ValidationPipe, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Inject, ValidationPipe, Query, Put } from '@nestjs/common';
 import { ApiTags, ApiParam, ApiOperation } from '@nestjs/swagger';
 import { CreateStoreDto } from '../dto/validators/create-store.dto';
 import { ApiBearerAuth } from '@nestjs/swagger';
@@ -11,6 +11,9 @@ import { GetStoreByIdService } from '../services/get-storeById';
 import { GetPaginatedStoresService } from '../services/get-paginatedStores';
 import { GetStoreByIdDto } from '../dto/validators/get-storeById.dto';
 import { GetPaginatedStoresDto } from '../dto/validators/get-paginated-stores.dto';
+import { UpdateStoreService } from '../services/update-store';
+import { UpdateStoreDto } from '../dto/validators/update-store.dto';
+import { DeleteStoreService } from '../services/delete-store';
 
 @ApiTags('Stores')
 @ApiBearerAuth('JWT-auth')
@@ -59,6 +62,32 @@ export class StoreController {
             return { error: result.Error.message, statusCode: result.StatusCode, message: result.Message };
         }
         
+        return result.Value;
+    }
+
+    @Put('/:id')
+    @ApiParam({ name: 'id', required: true, description: 'Store id', type: String })
+    async updateStore(@Param(new ValidationPipe({ transform: true })) params: GetStoreByIdDto, @Body() updateStoreDto: UpdateStoreDto) {
+        const service = new UpdateStoreService(this.storeRepository);
+        const result = await service.execute({ ...updateStoreDto, id: params.id });
+
+        if (!result.isSuccess()) {
+            return { error: result.Error.message, statusCode: result.StatusCode, message: result.Message };
+        }
+
+        return result.Value;
+    }
+
+    @Delete('/:id')
+    @ApiParam({ name: 'id', required: true, description: 'Store id', type: String })
+    async deleteStore(@Param(new ValidationPipe({ transform: true })) params: GetStoreByIdDto) {
+        const service = new DeleteStoreService(this.storeRepository);
+        const result = await service.execute(params);
+
+        if (!result.isSuccess()) {
+            return { error: result.Error.message, statusCode: result.StatusCode, message: result.Message };
+        }
+
         return result.Value;
     }
 }

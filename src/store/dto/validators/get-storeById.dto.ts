@@ -1,7 +1,6 @@
-import { IsString, MinLength } from 'class-validator';
+import { IsString, IsUUID, MaxLength, MinLength } from 'class-validator';
 
 export class GetStoreByIdDto {
-    @IsString()
-    @MinLength(2)
+    @IsUUID()
     id: string;
 }

@@ -23,7 +23,7 @@ export class CreateStoreService implements IApplicationService<CreateStoreEntryD
             data.image
         );
 
-        const result = await this.storeRepository.createStore(domainStore);
+        const result = await this.storeRepository.saveStore(domainStore);
 
         if (!result.isSuccess()) {
             return Result.fail(result.Error, result.StatusCode ?? 500, result.Message);
