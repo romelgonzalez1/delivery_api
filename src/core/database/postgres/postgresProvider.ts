@@ -10,9 +10,12 @@ export const DatabaseProvider = [{
             username: process.env.DB_USERNAME,
             password: process.env.DB_PASSWORD,
             database: process.env.DB_NAME,
-            synchronize: true,
+            synchronize: false,
             logging: false,
-            entities: getMetadataArgsStorage().tables.map((table) => table.target),
+            entities: [__dirname + '/../../../../**/*.entity{.ts,.js}'],
+            migrations: [__dirname + '/../../../db/migrations/*{.ts,.js}'],
+            migrationsTableName: 'migrations_history', // Buena práctica
+            //entities: getMetadataArgsStorage().tables.map((table) => table.target),
             // ssl: {
             //     rejectUnauthorized: false,
             // },

@@ -4,7 +4,7 @@ import { AppController } from './app.controller';
 import { ProductController } from './product/controller/product.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
-import DatabaseProvider from './core/database/postgresProvider';
+import DatabaseProvider from './core/database/postgres/postgresProvider';
 
 @Module({
   imports: [ConfigModule.forRoot({ isGlobal: true }), AuthModule],
