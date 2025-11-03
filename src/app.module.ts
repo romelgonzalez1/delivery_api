@@ -7,10 +7,11 @@ import { AuthController } from './auth/controller/auth.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import DatabaseProvider from './core/database/postgres/postgresProvider';
+import { StoreProductController } from './storeProduct/controller/storeProduct.controller';
 
 @Module({
   imports: [ConfigModule.forRoot({ isGlobal: true }), AuthModule],
-  controllers: [AppController, ProductController, StoreController, AuthController],
+  controllers: [AppController, ProductController, StoreController, AuthController, StoreProductController],
   providers: [AppService, ...DatabaseProvider],
 })
 export class AppModule {}
