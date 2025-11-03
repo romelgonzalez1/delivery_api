@@ -53,6 +53,7 @@ export class StoreController {
         return result.Value;
     }
 
+    @UseGuards(JwtAuthGuard)
     @Post()
     async createStore(@Body() createStoreDto: CreateStoreDto) {
         const service = new CreateStoreService(this.storeRepository);
@@ -65,6 +66,7 @@ export class StoreController {
         return result.Value;
     }
 
+    @UseGuards(JwtAuthGuard)
     @Put('/:id')
     @ApiParam({ name: 'id', required: true, description: 'Store id', type: String })
     async updateStore(@Param(new ValidationPipe({ transform: true })) params: GetStoreByIdDto, @Body() updateStoreDto: UpdateStoreDto) {
@@ -78,6 +80,7 @@ export class StoreController {
         return result.Value;
     }
 
+    @UseGuards(JwtAuthGuard)
     @Delete('/:id')
     @ApiParam({ name: 'id', required: true, description: 'Store id', type: String })
     async deleteStore(@Param(new ValidationPipe({ transform: true })) params: GetStoreByIdDto) {

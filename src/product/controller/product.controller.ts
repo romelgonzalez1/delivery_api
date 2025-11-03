@@ -20,7 +20,6 @@ export class ProductController {
         this.productRepository = new ProductRepository(this.dataSource)
     }
 
-    // @UseGuards(JwtAuthGuard)
     @Get('/:id')
     @ApiParam({ name: 'id', required: true, description: 'Product id', type: String })
     async findProductById(@Param(new ValidationPipe({ transform: true })) params: GetProductByIdDto) {
@@ -34,6 +33,7 @@ export class ProductController {
         return result.Value;
     }
 
+    @UseGuards(JwtAuthGuard)
     @Post()
     async createProduct(@Body() createProductDto: CreateProductDto) {
         const service = new CreateProductService(this.productRepository);
