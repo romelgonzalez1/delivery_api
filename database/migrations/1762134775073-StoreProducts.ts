@@ -7,6 +7,8 @@ export class StoreProducts1762134775073 implements MigrationInterface {
         await queryRunner.query(`CREATE TABLE "store_product" ("storeId" uuid NOT NULL, "productId" uuid NOT NULL, "price" numeric(10,2) NOT NULL, "stock" integer NOT NULL DEFAULT '0', CONSTRAINT "PK_8c18d31dc24e86af79f50318b56" PRIMARY KEY ("storeId", "productId"))`);
         await queryRunner.query(`ALTER TABLE "store_product" ADD CONSTRAINT "FK_8988ebd2c1c321738c3bfa4c9b4" FOREIGN KEY ("storeId") REFERENCES "store"("id") ON DELETE CASCADE ON UPDATE NO ACTION`);
         await queryRunner.query(`ALTER TABLE "store_product" ADD CONSTRAINT "FK_13e275149d7414c2694da12dcf7" FOREIGN KEY ("productId") REFERENCES "product"("id") ON DELETE CASCADE ON UPDATE NO ACTION`);
+
+        await queryRunner.query(`CREATE EXTENSION IF NOT EXISTS unaccent;`);
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {

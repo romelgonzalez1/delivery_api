@@ -8,10 +8,12 @@ import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import DatabaseProvider from './core/database/postgres/postgresProvider';
 import { StoreProductController } from './storeProduct/controller/storeProduct.controller';
+import { SeedingModule } from 'database/seeding/seeding.module';
+import { DatabaseModule } from './core/database/postgres/database.module';
 
 @Module({
-  imports: [ConfigModule.forRoot({ isGlobal: true }), AuthModule],
+  imports: [ConfigModule.forRoot({ isGlobal: true }), AuthModule, DatabaseModule, SeedingModule],
   controllers: [AppController, ProductController, StoreController, AuthController, StoreProductController],
-  providers: [AppService, ...DatabaseProvider],
+  providers: [AppService],
 })
 export class AppModule {}

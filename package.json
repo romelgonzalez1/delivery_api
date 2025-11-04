@@ -21,7 +21,8 @@
     "typeorm": "npm run build && npx typeorm -d dist/data-source.js",
     "migration:generate": "npm run typeorm -- migration:generate",
     "migration:run": "npm run typeorm -- migration:run",
-    "migration:revert": "npm run typeorm -- migration:revert"
+    "migration:revert": "npm run typeorm -- migration:revert",
+    "seed": "ts-node -r tsconfig-paths/register database/seeding/seed.ts"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",
@@ -30,6 +31,7 @@
     "@nestjs/microservices": "^11.1.8",
     "@nestjs/platform-express": "^11.0.1",
     "@nestjs/swagger": "^11.2.1",
+    "@nestjs/typeorm": "^11.0.0",
     "bcrypt": "^6.0.0",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.2",
