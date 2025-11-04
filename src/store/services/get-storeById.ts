@@ -6,13 +6,14 @@ import { GetStoreByIdServiceEntryDto } from '../dto/entry/get-storeById-entry.dt
 import { GetStoreByIdServiceResponseDto } from '../dto/response/get-store-response.dto';
 import { IStoreRepository } from '../repository/IStoreRepository';
 import { Store } from '../model/store';
-
+import { IImageHandler } from 'src/core/image.url.generator/IImageHandler';
 
 export class GetStoreByIdService implements IApplicationService<GetStoreByIdServiceEntryDto, GetStoreByIdServiceResponseDto> {
 
     constructor(
-        private readonly storeRepository: IStoreRepository
-    ){}
+        private readonly storeRepository: IStoreRepository,
+        private readonly imageHandler: IImageHandler
+    ) {}
 
     async execute(data: GetStoreByIdServiceEntryDto): Promise<Result<GetStoreByIdServiceResponseDto>> {
 
@@ -22,11 +23,13 @@ export class GetStoreByIdService implements IApplicationService<GetStoreByIdServ
             return Result.fail(store.Error, store?.StatusCode ?? 500, store.Message)
         }
 
+        const imageUrl = await this.imageHandler.generateImage(store.Value.Image)
+
         const response: GetStoreByIdServiceResponseDto = {
             id: store.Value.Id,
             name: store.Value.Name,
             description: store.Value.Description,
-            image: store.Value.Image,
+            image: imageUrl
         };
 
         return Result.success<GetStoreByIdServiceResponseDto>(response, 200);

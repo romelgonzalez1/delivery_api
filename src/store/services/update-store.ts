@@ -5,13 +5,14 @@ import { Store } from "../model/store";
 import { IStoreRepository } from "../repository/IStoreRepository";
 import { UpdateStoreServiceEntryDto } from "../dto/entry/update-store-entry.dto";
 import { UpdateStoreServiceResponseDto } from "../dto/response/update-store-response.dto";
-
+import { IImageHandler } from "src/core/image.url.generator/IImageHandler";
 
 export class UpdateStoreService implements IApplicationService<UpdateStoreServiceEntryDto, UpdateStoreServiceResponseDto> {
 
     constructor(
-        private readonly storeRepository: IStoreRepository
-    ){}
+        private readonly storeRepository: IStoreRepository,
+        private readonly imageHandler: IImageHandler
+    ) {}
 
     async execute(data: UpdateStoreServiceEntryDto): Promise<Result<UpdateStoreServiceResponseDto>> {
 
@@ -23,7 +24,10 @@ export class UpdateStoreService implements IApplicationService<UpdateStoreServic
 
         if(data.name) result.Value.Name = data.name;
         if(data.description) result.Value.Description = data.description;
-        if(data.image) result.Value.Image = data.image;
+        if(data.image) {
+            const imageId = await this.imageHandler.UploadImage(data.image)
+            result.Value.Image = imageId;
+        }
 
         const update = await this.storeRepository.saveStore(result.Value);
 

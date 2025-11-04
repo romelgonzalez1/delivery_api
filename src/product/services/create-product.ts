@@ -5,21 +5,24 @@ import { Result } from "src/core/result-handler/result";
 import { IProductRepository } from "../repository/IProductRepository";
 import { Product } from "../model/product";
 import { randomUUID } from 'crypto';
-
+import { IImageHandler } from "src/core/image.url.generator/IImageHandler";
 
 export class CreateProductService implements IApplicationService<CreateProductEntryDto, CreateProductResponseDto> {
 
     constructor(
-        private readonly productRepository: IProductRepository
-    ){}
+        private readonly productRepository: IProductRepository,
+        private readonly imageHandler: IImageHandler
+    ) {}
 
     async execute(data: CreateProductEntryDto): Promise<Result<CreateProductResponseDto>> {
+
+        const imageId = await this.imageHandler.UploadImage(data.image);
 
         const domainProduct = new Product(
             randomUUID(), 
             data.name, 
             data.description, 
-            data.image
+            imageId
         );
 
         const result = await this.productRepository.createProduct(domainProduct);

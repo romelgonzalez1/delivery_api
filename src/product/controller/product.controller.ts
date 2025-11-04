@@ -9,21 +9,24 @@ import { DataSource } from 'typeorm';
 import { GetProductByIdService } from '../services/get-productById';
 import { CreateProductService } from '../services/create-product';
 import { ProductRepository } from '../repository/postgres/product.repository';
+import { ImageUrlGenerator } from 'src/core/image.url.generator/image.url.generator';
 
 @ApiTags('Products')
 @ApiBearerAuth('JWT-auth')
 @Controller('products')
 export class ProductController {
     private readonly productRepository: ProductRepository;
+    private readonly imageUrlGenerator: ImageUrlGenerator;
 
     constructor(@Inject(DataSource) private readonly dataSource: DataSource) {
         this.productRepository = new ProductRepository(this.dataSource)
+        this.imageUrlGenerator = new ImageUrlGenerator();
     }
 
     @Get('/:id')
     @ApiParam({ name: 'id', required: true, description: 'Product id', type: String })
     async findProductById(@Param(new ValidationPipe({ transform: true })) params: GetProductByIdDto) {
-        const service = new GetProductByIdService(this.productRepository);
+        const service = new GetProductByIdService(this.productRepository, this.imageUrlGenerator);
         const result = await service.execute(params);
 
         if (!result.isSuccess()) {
@@ -36,7 +39,7 @@ export class ProductController {
     @UseGuards(JwtAuthGuard)
     @Post()
     async createProduct(@Body() createProductDto: CreateProductDto) {
-        const service = new CreateProductService(this.productRepository);
+        const service = new CreateProductService(this.productRepository, this.imageUrlGenerator);
         const result = await service.execute(createProductDto);
 
         if (!result.isSuccess()) {

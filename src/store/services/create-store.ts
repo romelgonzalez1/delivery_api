@@ -6,21 +6,24 @@ import { randomUUID } from 'crypto';
 import { Store } from "../model/store";
 import { CreateProductResponseDto } from "src/product/dto/response/create-product-response.dto";
 import { IStoreRepository } from "../repository/IStoreRepository";
-
+import { IImageHandler } from "src/core/image.url.generator/IImageHandler";
 
 export class CreateStoreService implements IApplicationService<CreateStoreEntryDto, CreateStoreResponseDto> {
 
     constructor(
-        private readonly storeRepository: IStoreRepository
-    ){}
+        private readonly storeRepository: IStoreRepository,
+        private readonly imageHandler: IImageHandler
+    ) {}
 
     async execute(data: CreateStoreEntryDto): Promise<Result<CreateStoreResponseDto>> {
+
+        const imageId = await this.imageHandler.UploadImage(data.image);
 
         const domainStore = new Store(
             randomUUID(), 
             data.name, 
             data.description, 
-            data.image
+            imageId
         );
 
         const result = await this.storeRepository.saveStore(domainStore);

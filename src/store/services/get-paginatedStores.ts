@@ -6,13 +6,14 @@ import { GetPaginatedStoresEntryDto } from '../dto/entry/get-paginated-stores-en
 import { GetPaginatedStoresResponseDto } from '../dto/response/get-paginated-stores-response.dto';
 import { IStoreRepository } from '../repository/IStoreRepository';
 import { Store } from '../model/store';
-
+import { IImageHandler } from 'src/core/image.url.generator/IImageHandler';
 
 export class GetPaginatedStoresService implements IApplicationService<GetPaginatedStoresEntryDto, GetPaginatedStoresResponseDto> {
 
     constructor(
-        private readonly storeRepository: IStoreRepository
-    ){}
+        private readonly storeRepository: IStoreRepository,
+        private readonly imageHandler: IImageHandler
+    ) {}
 
     async execute(data: GetPaginatedStoresEntryDto): Promise<Result<GetPaginatedStoresResponseDto>> {
 
@@ -33,6 +34,10 @@ export class GetPaginatedStoresService implements IApplicationService<GetPaginat
             page: data.page,
             limit: data.limit,
         };
+
+        for (let i = 0; i < response.stores.length; i++) {
+            response.stores[i].image = await this.imageHandler.generateImage(response.stores[i].image);
+        }
 
         return Result.success<GetPaginatedStoresResponseDto>(response, 200);
     }

@@ -16,7 +16,7 @@ import { UpdateStoreProductService } from "../services/update-storeProduct.servi
 import { UpdateStoreProductDto } from "../dto/validators/update-storeProduc.dto";
 import { GetProductByIdDto } from "src/product/dto/validators/get-productById.dto";
 import { DeleteStoreProductsService } from "../services/delete-storeProduct.service";
-// UUID type not needed; route params are strings validated by ParseUUIDPipe
+import { ImageUrlGenerator } from "src/core/image.url.generator/image.url.generator";
 
 @ApiTags('StoreProducts')
 @ApiBearerAuth('JWT-auth')
@@ -25,11 +25,13 @@ export class StoreProductController {
     private readonly storeProductRepository: StoreProductRepository;
     private readonly storeRepository: StoreRepository;
     private readonly productRepository: ProductRepository;
+    private readonly imageHandler: ImageUrlGenerator;
 
     constructor(@Inject(DataSource) private readonly dataSource: DataSource) {
         this.storeProductRepository = new StoreProductRepository(this.dataSource)
         this.storeRepository = new StoreRepository(this.dataSource)
         this.productRepository = new ProductRepository(this.dataSource)
+        this.imageHandler = new ImageUrlGenerator();
     }
 
     @Get()
@@ -40,7 +42,7 @@ export class StoreProductController {
         @Query(new ValidationPipe({ transform: true })) getPaginatedStoresDto: GetPaginatedStoresProductsDto,
     ) {
 
-        const service = new GetPaginatedStoreProductsService(this.storeProductRepository, this.storeRepository);
+        const service = new GetPaginatedStoreProductsService(this.storeProductRepository, this.storeRepository, this.imageHandler);
         const result = await service.execute({ ...getPaginatedStoresDto, storeId: params.id });
 
         if (!result.isSuccess()) {

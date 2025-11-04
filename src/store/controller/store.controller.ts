@@ -14,22 +14,25 @@ import { GetPaginatedStoresDto } from '../dto/validators/get-paginated-stores.dt
 import { UpdateStoreService } from '../services/update-store';
 import { UpdateStoreDto } from '../dto/validators/update-store.dto';
 import { DeleteStoreService } from '../services/delete-store';
+import { ImageUrlGenerator } from 'src/core/image.url.generator/image.url.generator';
 
 @ApiTags('Stores')
 @ApiBearerAuth('JWT-auth')
 @Controller('stores')
 export class StoreController {
     private readonly storeRepository: StoreRepository;
+    private readonly imageUrlGenerator: ImageUrlGenerator;
 
     constructor(@Inject(DataSource) private readonly dataSource: DataSource) {
         this.storeRepository = new StoreRepository(this.dataSource)
+        this.imageUrlGenerator = new ImageUrlGenerator();
     }
 
     // @UseGuards(JwtAuthGuard)
     @Get('/:id')
     @ApiParam({ name: 'id', required: true, description: 'Store id', type: String })
     async findStoreById(@Param(new ValidationPipe({ transform: true })) params: GetStoreByIdDto) {
-        const service = new GetStoreByIdService(this.storeRepository);
+        const service = new GetStoreByIdService(this.storeRepository, this.imageUrlGenerator);
         const result = await service.execute(params);
 
         if (!result.isSuccess()) {
@@ -43,7 +46,7 @@ export class StoreController {
     @ApiOperation({ summary: 'Obtener un listado de tiendas con paginación y búsqueda' })
     async findStores(@Query(new ValidationPipe({ transform: true })) getPaginatedStoresDto: GetPaginatedStoresDto) {
         
-        const service = new GetPaginatedStoresService(this.storeRepository);
+        const service = new GetPaginatedStoresService(this.storeRepository, this.imageUrlGenerator);
         const result = await service.execute(getPaginatedStoresDto);
 
         if (!result.isSuccess()) {
@@ -56,7 +59,7 @@ export class StoreController {
     @UseGuards(JwtAuthGuard)
     @Post()
     async createStore(@Body() createStoreDto: CreateStoreDto) {
-        const service = new CreateStoreService(this.storeRepository);
+        const service = new CreateStoreService(this.storeRepository, this.imageUrlGenerator);
         const result = await service.execute(createStoreDto);
 
         if (!result.isSuccess()) {
@@ -70,7 +73,7 @@ export class StoreController {
     @Put('/:id')
     @ApiParam({ name: 'id', required: true, description: 'Store id', type: String })
     async updateStore(@Param(new ValidationPipe({ transform: true })) params: GetStoreByIdDto, @Body() updateStoreDto: UpdateStoreDto) {
-        const service = new UpdateStoreService(this.storeRepository);
+        const service = new UpdateStoreService(this.storeRepository, this.imageUrlGenerator);
         const result = await service.execute({ ...updateStoreDto, id: params.id });
 
         if (!result.isSuccess()) {

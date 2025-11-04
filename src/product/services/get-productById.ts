@@ -6,12 +6,14 @@ import { IProductRepository } from '../repository/IProductRepository';
 import { Product } from '../model/product';
 import { Res } from '@nestjs/common';
 import { error } from 'console';
+import { IImageHandler } from 'src/core/image.url.generator/IImageHandler';
 
 export class GetProductByIdService implements IApplicationService<GetProductByIdServiceEntryDto, GetProductByIdServiceResponseDto> {
 
     constructor(
-        private readonly productRepository: IProductRepository
-    ){}
+        private readonly productRepository: IProductRepository,
+        private readonly imageHandler: IImageHandler
+    ) {}    
 
     async execute(data: GetProductByIdServiceEntryDto): Promise<Result<GetProductByIdServiceResponseDto>> {
 
@@ -21,11 +23,13 @@ export class GetProductByIdService implements IApplicationService<GetProductById
             return Result.fail(product.Error, product?.StatusCode ?? 500, product.Message)
         }
 
+        const imageUrl = await this.imageHandler.generateImage(product.Value.Image)
+
         const response: GetProductByIdServiceResponseDto = {
             id: product.Value.Id,
             name: product.Value.Name,
             description: product.Value.Description,
-            image: product.Value.Image,
+            image: imageUrl
         };
 
         return Result.success<GetProductByIdServiceResponseDto>(response, 200);

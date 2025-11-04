@@ -8,13 +8,14 @@ import { IStoreProductRepository } from '../repository/IStoreProductRepository';
 import { IStoreRepository } from 'src/store/repository/IStoreRepository';
 import { StoreProduct } from '../model/storeProduct';
 import { ProductDetail } from '../../product/model/productDetail';
-
+import { IImageHandler } from 'src/core/image.url.generator/IImageHandler';
 
 export class GetPaginatedStoreProductsService implements IApplicationService<GetPaginatedStoresProductsEntryDto, GetPaginatedStoresProductsResponseDto> {
 
     constructor(
         private readonly storeProductRepository: IStoreProductRepository,
-        private readonly storeRepository: IStoreRepository
+        private readonly storeRepository: IStoreRepository,
+        private readonly imageHandler: IImageHandler
     ){}
 
     async execute(data: GetPaginatedStoresProductsEntryDto): Promise<Result<GetPaginatedStoresProductsResponseDto>> {
@@ -45,6 +46,10 @@ export class GetPaginatedStoreProductsService implements IApplicationService<Get
             page: data.page,
             limit: data.limit,
         };
+
+        for (let i = 0; i < response.productDetails.length; i++) {
+            response.productDetails[i].image = await this.imageHandler.generateImage(response.productDetails[i].image);
+        }
 
         return Result.success<GetPaginatedStoresProductsResponseDto>(response, 200);
     }
