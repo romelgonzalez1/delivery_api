@@ -1,4 +1,4 @@
-import { Controller, Inject, Put, ParseUUIDPipe } from "@nestjs/common";
+import { Controller, Inject, Put, ParseUUIDPipe, Delete } from "@nestjs/common";
 import { ApiBearerAuth, ApiTags, ApiOperation, ApiParam } from "@nestjs/swagger";
 import { DataSource } from "typeorm";
 import { StoreProductRepository } from "../repository/postgres/storeProduct.repository";
@@ -15,6 +15,7 @@ import { GetPaginatedStoresProductsDto } from "../dto/validators/get-paginated-s
 import { UpdateStoreProductService } from "../services/update-storeProduct.service";
 import { UpdateStoreProductDto } from "../dto/validators/update-storeProduc.dto";
 import { GetProductByIdDto } from "src/product/dto/validators/get-productById.dto";
+import { DeleteStoreProductsService } from "../services/delete-storeProduct.service";
 // UUID type not needed; route params are strings validated by ParseUUIDPipe
 
 @ApiTags('StoreProducts')
@@ -66,7 +67,7 @@ export class StoreProductController {
             return { error: result.Error.message, statusCode: result.StatusCode, message: result.Message };
         }
 
-        return result;
+        return result.Value;
     }
 
     @Put('/:storeProductId')
@@ -91,7 +92,27 @@ export class StoreProductController {
             return { error: result.Error.message, statusCode: result.StatusCode, message: result.Message };
         }
 
-        return result;
+        return result.Value;
+    }
+
+    @Delete('/:storeProductId')
+    @ApiParam({ name: 'id', required: true, description: 'Store id', type: String })
+    @ApiParam({ name: 'storeProductId', required: true, description: 'Product id', type: String })
+    async deleteStoreProduct(
+        @Param('id', ParseUUIDPipe) storeId: string, 
+        @Param('storeProductId', ParseUUIDPipe) productId: string
+    ) {
+        const service = new DeleteStoreProductsService(this.storeProductRepository);
+        const result = await service.execute({
+            storeId: storeId,
+            productId: productId
+        });
+
+        if (!result.isSuccess()) {
+            return { error: result.Error.message, statusCode: result.StatusCode, message: result.Message };
+        }
+
+        return result.Value;
     }
 
 }

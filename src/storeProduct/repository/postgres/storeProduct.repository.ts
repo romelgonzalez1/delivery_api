@@ -84,4 +84,20 @@ export class StoreProductRepository extends Repository<StoreProductORM> implemen
             return Result.fail(error, 500, error?.message ?? 'Internal error');
         }
     }
+
+    async deleteStoreProduct(storeProduct: StoreProduct): Promise<Result<StoreProduct>> {
+        try {
+
+            const deleteResult = await this.delete({ storeId: storeProduct.StoreId, productId: storeProduct.ProductId });
+
+            if (!deleteResult || !deleteResult.affected || deleteResult.affected === 0) {
+                return Result.fail<StoreProduct>(new Error('StoreProduct not found'), 404, 'StoreProduct not found');
+            }
+
+            return Result.success<StoreProduct>(storeProduct, 200);
+        } catch (error) {
+            console.log(error.message);
+            return Result.fail<StoreProduct>(error, 500, error?.message ?? 'Internal error');
+        }
+    }
 }
