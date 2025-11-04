@@ -59,6 +59,13 @@ DB_DATABASE=choppi_delivery_db
 
 # JWT
 JWT_SECRET=ESTE_ES_UN_SECRETO_MUY_SEGURO_CAMBIAME
+JWT_EXPIRES_IN=6h
+
+# Clodinary
+CLOUDINARY_NAME=your_cloudinary_name
+CLOUDINARY_API_KEY=your_api_key
+CLOUDINARY_API_SECRET=your_api_secret
+
 ```
 
 ### 4. Ejecutar las Migraciones
@@ -134,6 +141,17 @@ La API sigue un diseño RESTful, con los siguientes recursos principales:
 -   `/products`: CRUD para la gestión de productos.
 -   `/stores/:storeId/products`: Endpoints para gestionar la relación entre tiendas y productos (stock, precios, etc.).
 
+## Documentación de la API (Swagger)
+
+Esta API incluye una implementación de Swagger (OpenAPI) para visualizar y probar los endpoints de manera interactiva.
+
+Una vez que la aplicación esté corriendo en modo de desarrollo, puedes acceder a la documentación en la siguiente URL:
+
+**[http://localhost:3000/docs](http://localhost:3000/docs)**
+
+La documentación te permitirá ver todos los endpoints disponibles, los parámetros que aceptan, los DTOs (Data Transfer Objects) y los posibles códigos de respuesta.
+
+
 ## Stack Tecnológico
 
 -   **Framework**: [NestJS](https://nestjs.com/)
@@ -142,3 +160,12 @@ La API sigue un diseño RESTful, con los siguientes recursos principales:
 -   **Base de Datos**: [PostgreSQL](https://www.postgresql.org/)
 -   **Autenticación**: JWT (JSON Web Tokens)
 -   **Validación**: `class-validator` y `class-transformer`
+
+## Contacto
+
+Este proyecto es mantenido por **Romel Gonzalez**.
+
+-   **Correo**: [romel.gonzalez0036@gmail.com](mailto:romel.gonzalez0036@gmail.com)
+-   **LinkedIn**: [Romel Gonzalez](www.linkedin.com/in/romel-gonzalez-37a88b2a6)
+
+
