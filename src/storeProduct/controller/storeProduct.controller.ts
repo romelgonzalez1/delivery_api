@@ -1,4 +1,4 @@
-import { Controller, Inject } from "@nestjs/common";
+import { Controller, Inject, Put, ParseUUIDPipe } from "@nestjs/common";
 import { ApiBearerAuth, ApiTags, ApiOperation, ApiParam } from "@nestjs/swagger";
 import { DataSource } from "typeorm";
 import { StoreProductRepository } from "../repository/postgres/storeProduct.repository";
@@ -9,6 +9,13 @@ import { Get, Param, Query, ValidationPipe, Body, Post, UseGuards} from "@nestjs
 import { CreateStoreProductDto } from "../dto/validators/create-storeProduct.dto";
 import { CreateStoreProductService } from "../services/create-storeProducts.service";
 import { GetStoreByIdDto } from "src/store/dto/validators/get-storeById.dto";
+import { GetPaginatedStoreProductsService } from "../services/get-paginated-storeProducts.service";
+import { GetPaginatedStoresDto } from "src/store/dto/validators/get-paginated-stores.dto";
+import { GetPaginatedStoresProductsDto } from "../dto/validators/get-paginated-storeProducts.dto";
+import { UpdateStoreProductService } from "../services/update-storeProduct.service";
+import { UpdateStoreProductDto } from "../dto/validators/update-storeProduc.dto";
+import { GetProductByIdDto } from "src/product/dto/validators/get-productById.dto";
+// UUID type not needed; route params are strings validated by ParseUUIDPipe
 
 @ApiTags('StoreProducts')
 @ApiBearerAuth('JWT-auth')
@@ -22,6 +29,24 @@ export class StoreProductController {
         this.storeProductRepository = new StoreProductRepository(this.dataSource)
         this.storeRepository = new StoreRepository(this.dataSource)
         this.productRepository = new ProductRepository(this.dataSource)
+    }
+
+    @Get()
+    @ApiOperation({ summary: 'Obtener un listado de productos por tienda con paginación y búsqueda' })
+    @ApiParam({ name: 'id', required: true, description: 'Store id', type: String })
+    async findStores(
+        @Param(new ValidationPipe({ transform: true })) params: GetStoreByIdDto,
+        @Query(new ValidationPipe({ transform: true })) getPaginatedStoresDto: GetPaginatedStoresProductsDto,
+    ) {
+
+        const service = new GetPaginatedStoreProductsService(this.storeProductRepository, this.storeRepository);
+        const result = await service.execute({ ...getPaginatedStoresDto, storeId: params.id });
+
+        if (!result.isSuccess()) {
+            return { error: result.Error.message, statusCode: result.StatusCode, message: result.Message };
+        }
+
+        return result.Value;
     }
 
     @Post()
@@ -43,4 +68,30 @@ export class StoreProductController {
 
         return result;
     }
+
+    @Put('/:storeProductId')
+    @ApiParam({ name: 'id', required: true, description: 'Store id', type: String })
+    @ApiParam({ name: 'storeProductId', required: true, description: 'Product id', type: String })
+    async updateStoreProduct(
+        @Param('id', ParseUUIDPipe) storeId: string, 
+        @Param('storeProductId', ParseUUIDPipe) productId: string,
+        @Body() updateStoreProductDto: UpdateStoreProductDto) {
+        const service = new UpdateStoreProductService(
+            this.storeProductRepository,
+            this.productRepository,
+            this.storeRepository
+        );
+        const result = await service.execute({
+            ...updateStoreProductDto,
+            storeId: storeId,
+            productId: productId
+        });
+
+        if (!result.isSuccess()) {
+            return { error: result.Error.message, statusCode: result.StatusCode, message: result.Message };
+        }
+
+        return result;
+    }
+
 }

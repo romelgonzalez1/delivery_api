@@ -6,8 +6,10 @@ import { StoreProduct } from "../model/storeProduct";
 import { IStoreProductRepository } from "../repository/IStoreProductRepository";
 import { IProductRepository } from "src/product/repository/IProductRepository";
 import { IStoreRepository } from "src/store/repository/IStoreRepository";
+import { UpdateStoreProductEntryDto } from "../dto/entry/update-storeProduct-entry.dto";
+import { GetStoreProductResponseDto } from "../dto/response/get-storeProduct-response.dto";
 
-export class CreateStoreProductService implements IApplicationService<CreateStoreProductServiceEntryDTO, CreateStoreProductServiceResponseDTO> {
+export class UpdateStoreProductService implements IApplicationService<UpdateStoreProductEntryDto, GetStoreProductResponseDto> {
 
     constructor(
         private readonly storeProductRepository: IStoreProductRepository,
@@ -15,46 +17,30 @@ export class CreateStoreProductService implements IApplicationService<CreateStor
         private readonly storeRepository: IStoreRepository
     ){}
 
-    async execute(data: CreateStoreProductServiceEntryDTO): Promise<Result<CreateStoreProductServiceResponseDTO>> {
-
-        const productExists = await this.productRepository.findProductById(data.productId);
-
-        if (!productExists.isSuccess()) {
-            return Result.fail(new Error('Product does not exist'), 404, 'Product does not exist');
-        }
-
-        const storeExists = await this.storeRepository.findStoreById(data.storeId);
-
-        if (!storeExists.isSuccess()) {
-            return Result.fail(new Error('Store does not exist'), 404, 'Store does not exist');
-        }
+    async execute(data: UpdateStoreProductEntryDto): Promise<Result<GetStoreProductResponseDto>> {
 
         const storeProductExists = await this.storeProductRepository.findStoreProductByIds(data.storeId, data.productId);
 
-        if (storeProductExists.isSuccess()) {
-            return Result.fail(new Error('StoreProduct already exists'), 409, 'StoreProduct already exists');
+        if (!storeProductExists.isSuccess()) {
+            return Result.fail(new Error('StoreProduct does not exist'), 404, 'StoreProduct does not exist');
         }
 
-        const domainStore = new StoreProduct(
-            data.productId, 
-            data.storeId, 
-            data.price, 
-            data.stock
-        );
+        if(data.price) storeProductExists.Value.Price = data.price
+        if(data.stock) storeProductExists.Value.Stock = data.stock
 
-        const result = await this.storeProductRepository.saveStoreProduct(domainStore);
+        const result = await this.storeProductRepository.saveStoreProduct(storeProductExists.Value);
 
         if (!result.isSuccess()) {
             return Result.fail(result.Error, result.StatusCode ?? 500, result.Message);
         }
 
-        const response: CreateStoreProductServiceResponseDTO = {
+        const response: GetStoreProductResponseDto = {
             storeId: result.Value.StoreId!,
             productId: result.Value.ProductId!,
             price: result.Value.Price!,
             stock: result.Value.Stock!
         };
 
-        return Result.success<CreateStoreProductServiceResponseDTO>(response, 201);
+        return Result.success<GetStoreProductResponseDto>(response, 201);
     }
 }
