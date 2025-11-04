@@ -1,4 +1,5 @@
-import { Controller, Inject, Put, ParseUUIDPipe, Delete } from "@nestjs/common";
+import { Controller, Inject, Put, ParseUUIDPipe, Delete, Res } from "@nestjs/common";
+import type { Response } from 'express';
 import { ApiBearerAuth, ApiTags, ApiOperation, ApiParam } from "@nestjs/swagger";
 import { DataSource } from "typeorm";
 import { StoreProductRepository } from "../repository/postgres/storeProduct.repository";
@@ -40,21 +41,22 @@ export class StoreProductController {
     async findStores(
         @Param(new ValidationPipe({ transform: true })) params: GetStoreByIdDto,
         @Query(new ValidationPipe({ transform: true })) getPaginatedStoresDto: GetPaginatedStoresProductsDto,
+        @Res() res: Response
     ) {
 
         const service = new GetPaginatedStoreProductsService(this.storeProductRepository, this.storeRepository, this.imageHandler);
         const result = await service.execute({ ...getPaginatedStoresDto, storeId: params.id });
 
         if (!result.isSuccess()) {
-            return { error: result.Error.message, statusCode: result.StatusCode, message: result.Message };
+            return res.status(result.StatusCode ?? 500).json({ error: result.Error?.message, message: result.Message });
         }
 
-        return result.Value;
+        return res.status(result.StatusCode ?? 200).json(result.Value);
     }
 
     @Post()
     @ApiParam({ name: 'id', required: true, description: 'Store id', type: String })
-    async createStoreProduct(@Param(new ValidationPipe({ transform: true })) storeId: GetStoreByIdDto, @Body() createStoreProductDto: CreateStoreProductDto) {
+    async createStoreProduct(@Param(new ValidationPipe({ transform: true })) storeId: GetStoreByIdDto, @Body() createStoreProductDto: CreateStoreProductDto, @Res() res: Response) {
         const service = new CreateStoreProductService(
             this.storeProductRepository,
             this.productRepository,
@@ -66,10 +68,10 @@ export class StoreProductController {
         });
 
         if (!result.isSuccess()) {
-            return { error: result.Error.message, statusCode: result.StatusCode, message: result.Message };
+            return res.status(result.StatusCode ?? 500).json({ error: result.Error?.message, message: result.Message });
         }
 
-        return result.Value;
+        return res.status(result.StatusCode ?? 201).json(result.Value);
     }
 
     @Put('/:storeProductId')
@@ -78,7 +80,9 @@ export class StoreProductController {
     async updateStoreProduct(
         @Param('id', ParseUUIDPipe) storeId: string, 
         @Param('storeProductId', ParseUUIDPipe) productId: string,
-        @Body() updateStoreProductDto: UpdateStoreProductDto) {
+        @Body() updateStoreProductDto: UpdateStoreProductDto,
+        @Res() res: Response
+    ) {
         const service = new UpdateStoreProductService(
             this.storeProductRepository,
             this.productRepository,
@@ -91,10 +95,10 @@ export class StoreProductController {
         });
 
         if (!result.isSuccess()) {
-            return { error: result.Error.message, statusCode: result.StatusCode, message: result.Message };
+            return res.status(result.StatusCode ?? 500).json({ error: result.Error?.message, message: result.Message });
         }
 
-        return result.Value;
+        return res.status(result.StatusCode ?? 200).json(result.Value);
     }
 
     @Delete('/:storeProductId')
@@ -102,7 +106,8 @@ export class StoreProductController {
     @ApiParam({ name: 'storeProductId', required: true, description: 'Product id', type: String })
     async deleteStoreProduct(
         @Param('id', ParseUUIDPipe) storeId: string, 
-        @Param('storeProductId', ParseUUIDPipe) productId: string
+        @Param('storeProductId', ParseUUIDPipe) productId: string,
+        @Res() res: Response
     ) {
         const service = new DeleteStoreProductsService(this.storeProductRepository);
         const result = await service.execute({
@@ -111,10 +116,10 @@ export class StoreProductController {
         });
 
         if (!result.isSuccess()) {
-            return { error: result.Error.message, statusCode: result.StatusCode, message: result.Message };
+            return res.status(result.StatusCode ?? 500).json({ error: result.Error?.message, message: result.Message }) ;
         }
 
-        return result.Value;
+        return res.status(result.StatusCode ?? 200).json(result.Value);
     }
 
 }

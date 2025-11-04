@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Inject, ValidationPipe, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Inject, ValidationPipe, Query, Res } from '@nestjs/common';
 import { ApiTags, ApiParam } from '@nestjs/swagger';
 import { CreateProductDto } from '../dto/validators/create-product.dto';
 import { GetProductByIdDto } from '../dto/validators/get-productById.dto';
@@ -10,6 +10,7 @@ import { GetProductByIdService } from '../services/get-productById';
 import { CreateProductService } from '../services/create-product';
 import { ProductRepository } from '../repository/postgres/product.repository';
 import { ImageUrlGenerator } from 'src/core/image.url.generator/image.url.generator';
+import type { Response } from 'express';
 
 @ApiTags('Products')
 @ApiBearerAuth('JWT-auth')
@@ -25,27 +26,27 @@ export class ProductController {
 
     @Get('/:id')
     @ApiParam({ name: 'id', required: true, description: 'Product id', type: String })
-    async findProductById(@Param(new ValidationPipe({ transform: true })) params: GetProductByIdDto) {
+    async findProductById(@Param(new ValidationPipe({ transform: true })) params: GetProductByIdDto, @Res() res: Response) {
         const service = new GetProductByIdService(this.productRepository, this.imageUrlGenerator);
         const result = await service.execute(params);
 
         if (!result.isSuccess()) {
-            return { error: result.Error.message, statusCode: result.StatusCode, message: result.Message };
+            return res.status(result.StatusCode ?? 500).json({ error: result.Error?.message, message: result.Message });
         }
 
-        return result.Value;
+        return res.status(result.StatusCode ?? 200).json(result.Value);
     }
 
     @UseGuards(JwtAuthGuard)
     @Post()
-    async createProduct(@Body() createProductDto: CreateProductDto) {
+    async createProduct(@Body() createProductDto: CreateProductDto, @Res() res: Response) {
         const service = new CreateProductService(this.productRepository, this.imageUrlGenerator);
         const result = await service.execute(createProductDto);
 
         if (!result.isSuccess()) {
-            return { error: result.Error.message, statusCode: result.StatusCode, message: result.Message };
+            return res.status(result.StatusCode ?? 500).json({ error: result.Error?.message, message: result.Message });
         }
-        
-        return result.Value;
+
+        return res.status(result.StatusCode ?? 201).json(result.Value);
     }
 }
