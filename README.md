@@ -1,98 +1,144 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Choppi Delivery - API
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Bienvenido a la API de Choppi Delivery. Esta aplicación backend, construida con **NestJS**, gestiona toda la lógica de negocio para tiendas, productos, autenticación de usuarios y las relaciones entre ellos.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Tabla de Contenidos
 
-## Description
+1.  [Prerrequisitos](#prerrequisitos)
+2.  [Instalación y Configuración](#instalación-y-configuración)
+3.  [Ejecutando la Aplicación](#ejecutando-la-aplicación)
+4.  [Proceso de Build para Producción](#proceso-de-build-para-producción)
+5.  [Scripts Disponibles](#scripts-disponibles)
+6.  [Estructura de la API](#estructura-de-la-api)
+7.  [Stack Tecnológico](#stack-tecnológico)
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## Prerrequisitos
 
-## Project setup
+Antes de comenzar, asegúrate de tener instalado lo siguiente en tu entorno de desarrollo:
+
+-   [**Node.js**](https://nodejs.org/) (se recomienda versión 18.x o superior)
+-   [**npm**](https://www.npmjs.com/) (generalmente viene con Node.js)
+-   Una instancia de **PostgreSQL** corriendo localmente o en un servidor accesible.
+
+## Instalación y Configuración
+
+Sigue estos pasos para tener un entorno de desarrollo funcional.
+
+### 1. Clonar el Repositorio
+
+```bash
+$ git clone <URL_DE_TU_REPOSITORIO>
+$ cd delivery-api
+```
+
+### 2. Instalar Dependencias
+
+Instala todas las dependencias del proyecto definidas en el `package.json`.
 
 ```bash
 $ npm install
 ```
 
-## Compile and run the project
+### 3. Configurar Variables de Entorno
+
+La aplicación utiliza un archivo `.env` para gestionar las variables de entorno. Crea una copia del archivo de ejemplo:
 
 ```bash
-# development
-$ npm run start
+$ cp .env.example .env
+```
 
-# watch mode
+Ahora, abre el archivo `.env` y edita las variables con tus credenciales locales, especialmente las de la base de datos y el secreto para JWT.
+
+```ini
+# Base de Datos
+DB_HOST=localhost
+DB_PORT=5432
+DB_USERNAME=tu_usuario_postgres
+DB_PASSWORD=tu_contraseña_postgres
+DB_DATABASE=choppi_delivery_db
+
+# JWT
+JWT_SECRET=ESTE_ES_UN_SECRETO_MUY_SEGURO_CAMBIAME
+```
+
+### 4. Ejecutar las Migraciones
+
+Este comando aplicará todas las migraciones pendientes sobre tu base de datos, creando la estructura de tablas necesaria.
+
+```bash
+$ npm run migration:run
+```
+
+### 5. Poblar la Base de Datos (Seeding)
+
+Para tener datos de prueba y poder usar la API inmediatamente, ejecuta el script de seeding. Este comando insertará tiendas, productos y sus relaciones.
+
+```bash
+$ npm run seed
+```
+
+¡Listo! Tu entorno de desarrollo está completamente configurado y listo para usarse.
+
+## Ejecutando la Aplicación
+
+### Modo Desarrollo
+
+Este comando inicia la aplicación en modo de desarrollo con "hot-reloading". El servidor se reiniciará automáticamente cada vez que guardes un cambio en un archivo.
+
+```bash
 $ npm run start:dev
-
-# production mode
-$ npm run start:prod
 ```
 
-## Run tests
+La API estará disponible en `http://localhost:3000` (o el puerto que hayas configurado).
 
-```bash
-# unit tests
-$ npm run test
+### Modo Producción
 
-# e2e tests
-$ npm run test:e2e
+Para desplegar la aplicación en un entorno de producción, sigue estos dos pasos.
 
-# test coverage
-$ npm run test:cov
-```
+1.  **Construir la aplicación:**
+    ```bash
+    $ npm run build
+    ```
+    Este comando compila el código TypeScript a JavaScript y lo guarda en la carpeta `dist`.
 
-## Deployment
+2.  **Iniciar el servidor:**
+    ```bash
+    $ npm start
+    ```
+    Este comando ejecuta la aplicación desde los archivos compilados en la carpeta `dist`. Es más eficiente y está optimizado para producción.
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+## Proceso de Build para Producción
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+El comando `npm run build` es fundamental para el despliegue. Transpila todo el código fuente de TypeScript a JavaScript plano, que es lo que Node.js ejecuta de forma nativa. Este proceso es obligatorio antes de poder ejecutar la aplicación con `npm start`.
 
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
-```
+## Scripts Disponibles
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+Este proyecto incluye los siguientes scripts en `package.json`:
 
-## Resources
+| Script                 | Descripción                                                                                               |
+| ---------------------- | --------------------------------------------------------------------------------------------------------- |
+| `npm run build`        | Compila el proyecto de TypeScript a JavaScript en la carpeta `dist`.                                      |
+| `npm start`            | Inicia la aplicación en modo producción desde la carpeta `dist`.                                          |
+| `npm run start:dev`    | Inicia la aplicación en modo desarrollo con auto-recarga.                                                 |
+| `npm run lint`         | Ejecuta el linter (ESLint) para verificar la calidad y el estilo del código.                              |
+| `npm run migration:run`| Ejecuta las migraciones de TypeORM para actualizar el esquema de la base de datos.                        |
+| `npm run seed`         | Ejecuta el script de seeding para poblar la base de datos con datos iniciales.                            |
+| `npm test`             | Ejecuta las pruebas unitarias y de integración.                                                           |
 
-Check out a few resources that may come in handy when working with NestJS:
+## Estructura de la API
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+La API sigue un diseño RESTful, con los siguientes recursos principales:
 
-## Support
+-   `/auth`: Endpoints para registro (`/register`) y autenticación (`/login`).
+-   `/stores`: CRUD para la gestión de tiendas.
+-   `/products`: CRUD para la gestión de productos.
+-   `/stores/:storeId/products`: Endpoints para gestionar la relación entre tiendas y productos (stock, precios, etc.).
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+## Stack Tecnológico
 
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+-   **Framework**: [NestJS](https://nestjs.com/)
+-   **Lenguaje**: [TypeScript](https://www.typescriptlang.org/)
+-   **ORM**: [TypeORM](https://typeorm.io/)
+-   **Base de Datos**: [PostgreSQL](https://www.postgresql.org/)
+-   **Autenticación**: JWT (JSON Web Tokens)
+-   **Validación**: `class-validator` y `class-transformer`
