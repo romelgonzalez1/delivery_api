@@ -1,6 +1,6 @@
-# Choppi Delivery - API
+# Delivery - API
 
-Bienvenido a la API de Choppi Delivery. Esta aplicación backend, construida con **NestJS**, gestiona toda la lógica de negocio para tiendas, productos, autenticación de usuarios y las relaciones entre ellos.
+Bienvenido a la API de Delivery. Esta aplicación backend, construida con **NestJS**, gestiona toda la lógica de negocio para tiendas, productos, autenticación de usuarios y las relaciones entre ellos.
 
 ## Tabla de Contenidos
 
@@ -55,7 +55,7 @@ DB_HOST=localhost
 DB_PORT=5432
 DB_USERNAME=tu_usuario_postgres
 DB_PASSWORD=tu_contraseña_postgres
-DB_DATABASE=choppi_delivery_db
+DB_DATABASE=delivery_db
 
 # JWT
 JWT_SECRET=ESTE_ES_UN_SECRETO_MUY_SEGURO_CAMBIAME
